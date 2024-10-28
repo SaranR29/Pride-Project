@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eLearning</title>
+    <link rel="stylesheet" href="joinnow.css">
+    <style>
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="navbar">
+            <div class="icon">
+                <h2 class="logo">eLearning</h2>
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="index.html">HOME</a></li>
+                    <li><a href="about.html">ABOUT</a></li>
+                    <li><a href="courses.html">COURSES</a></li>
+                    <li><a href="contact.html">CONTACT</a></li>
+                </ul>
+            </div>
+        </div> 
+        <div class="content">
+            <h1>E LEARNING <br><span>Management</span> <br>System</h1>
+            <p class="par">
+                An e-learning management system (LMS) is a software application that helps create, <br>manage, deliver, and assess online learning programs. LMSs are used by businesses, <br>government agencies, and educational institutions to improve traditional educational methods.
+            </p>
+            <button class="cn"><a href="register.html">JOIN US</a></button>
+            <div class="form">
+                <h2>LOGIN HERE</h2>
+                <form id="loginForm">
+                    <select id="loginType" onchange="toggleInputFields()">
+                        <option value="admin">ADMIN LOGIN</option>
+                        <option value="student">STUDENT LOGIN</option>
+                        <option value="instructor">INSTRUCTOR LOGIN</option>
+                    </select>
+                    <input type="email" id="email" placeholder="Enter email">
+                    <input type="password" id="password" placeholder="Enter Password">
+                    <center>
+                        <div>
+                            <button class="btn" type="submit">LOGIN</button>
+                        </div>
+                    </center>
+                    <div id="error-message" class="error"></div>
+                </form>
+                <div class="icons">
+                    <a href="#"><ion-icon name="logo-facebook"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-twitter"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-google"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-skype"></ion-icon></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+    <script>
+        function toggleInputFields() {
+            // Implementation is not needed for this example as we removed the register number input
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var loginType = document.getElementById('loginType').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var errorMessage = document.getElementById('error-message');
+
+            errorMessage.textContent = ''; // Clear previous error messages
+
+            // Validate email
+            var emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            // Validate password (must include at least 8 characters with alphabets and numbers)
+            var passwordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+
+            if (emailValid && passwordValid) {
+                // If valid, send the data to the backend
+                fetch('http://localhost:5000/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        if (loginType === 'admin') {
+                            window.location.href = 'index.html'; // Redirect to home page
+                        } else if (loginType === 'student') {
+                            window.location.href = 'courses.html'; // Redirect to course page
+                        } else if (loginType === 'instructor') {
+                            window.location.href = 'team.html'; // Redirect to team page
+                        }
+                    } else {
+                        errorMessage.textContent = 'Login failed: ' + data.error;
+                    }
+                })
+                .catch(error => {
+                    errorMessage.textContent = 'Error: ' + error.message;
+                });
+            } else {
+                if (!emailValid) {
+                    errorMessage.textContent = 'Please enter a valid email.';
+                } else if (!passwordValid) {
+                    errorMessage.textContent = 'Password must be at least 8 characters long, and include both letters and numbers.';
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
